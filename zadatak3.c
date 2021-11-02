@@ -3,7 +3,6 @@
 #include <string.h>
 #define MAX_SIZE (50)
 
-// greska create person mislimm
 struct _Person;
 typedef struct _Person* Position;
 typedef struct _Person {
