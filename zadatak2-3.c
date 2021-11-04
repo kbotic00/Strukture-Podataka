@@ -17,6 +17,24 @@ typedef struct _Person
 
 //1a dodaje osobu na pocetak liste
 int addStart (Position head);
+Position createPersonFile(char* name, char* surname, int birthYear){ 
+    
+    Position newPerson = NULL;
+    newPerson=(Position)malloc(sizeof(Person));
+
+    if (!newPerson) {
+        perror("Can't allocate memory!\n");
+        return 0;
+    }
+
+    strcpy(newPerson->name, name);
+    strcpy(newPerson->surname, surname);
+    newPerson->birthYear = birthYear;
+    newPerson->next = NULL;
+
+    return newPerson;
+    
+}
 //1c dodaje osobu na kraj liste
 int addEnd(Position head);
 
@@ -42,6 +60,47 @@ int addAfter(Position head,char* searched);
 //b dodaje osobu ispred neke osobe
 int addBefore(Position head,char* searched);
 //b pom dodaje ispred
+
+// upisuje iz datoteke
+int InsertionfromFile(Position first,char* imeDatoteke);
+// upisuje u datoteku
+int InsertiontoFile(Position first,char*imeDatoteke);
+
+
+int InsertionfromFile(Position first,char* imeDatoteke){
+    FILE *dat=NULL;
+    Position temp=first;
+    Position newPerson=NULL;
+    dat=fopen(imeDatoteke,"r");
+    char ime[MAX_SIZE]={0};
+    char prezime[MAX_SIZE]={0};
+    int god=0;
+    if(!dat)
+        return -1;
+    while(!feof(dat)){
+        fscanf(dat," %s %s %d \n",ime,prezime,&god);
+        newPerson=createPersonFile(ime,prezime,god);
+        insertAfter (first, newPerson);
+        }
+    fclose(dat);
+
+}
+int InsertiontoFile(Position first,char*imeDatoteke){
+    FILE *dat=NULL;
+    Position temp=first;
+    dat=fopen(imeDatoteke,"w");
+    if(!dat)
+        return -1;
+    
+    while(temp){
+        if(temp!=first)
+            fprintf(dat," %s %s %d",temp->name,temp->surname,temp->birthYear);
+    
+        temp=temp->next;
+    }
+    fclose(dat);
+    return 0;
+}
 
 int insertBefore(Position head,Position searched){
     Position find=NULL;
@@ -194,10 +253,11 @@ int main ()
     char searchedSurname[MAX_SIZE]={0};
     int odabir = 0;
     int flag = 1;
+    char nazivdat[MAX_SIZE]="zadatak.txt";
     while (flag){
         printf("Odaberite:\n 0-Kraj \n 1-Dodavanje elementa na pocetak\n 2-Ispis liste\n 3-Dodavanje elementa na kraj\n"
                 " 4-Pronaći element po prezimenu\n 5-Obrisati određeni element\n 6-Dodati novi element iza određenog"
-                "\n 7-Dodati novi element ispred određenog");
+                "\n 7-Dodati novi element ispred određenog\n 9-Upisliste u datoteku\n 10-Upis liste iz datoteke\n ");
         scanf ("%d", &odabir);
         
         switch (odabir){
@@ -238,6 +298,13 @@ int main ()
                 addBefore(p,searchedSurname);
                 break;
             }
+            case 8:
+            case 9: 
+                InsertiontoFile(p,nazivdat);
+                break;
+            case 10:
+                InsertionfromFile(p,nazivdat);
+                break;
             default:{
                 printf("Kraj!");
                 flag=0;
